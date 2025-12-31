@@ -1,3 +1,19 @@
+import { App } from "./app";
+import { ExeptionFilters } from "./errors/exeption.filter";
+import { LoggerService } from "./logger/logger.service";
+import { UserController } from "./users/user.controller";
+
+async function bootstrap() {
+    const logger = new LoggerService()
+    const app = new App(logger, new UserController(logger), new ExeptionFilters(logger))
+    await app.init()
+}
+
+
+bootstrap()
+
+
+/* 
 import express from 'express'
 import type { Request, Response, NextFunction} from 'express'
 
@@ -31,3 +47,7 @@ app.use((err: Error, req: Request, res:Response, next:NextFunction) => {
 app.listen(port, () => {
     console.log(`Сервер запущен на http://localhost:${port}`);
 })
+
+
+
+*/
