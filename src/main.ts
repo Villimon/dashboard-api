@@ -7,6 +7,10 @@ import { LoggerType } from './logger/logger.interface';
 import { TYPES } from './types';
 import { ExeptionFilter } from './errors/exeption.filter.interface';
 import { UserControllerType } from './users/user.controller.interface';
+import { UserServiceType } from './users/users.service.interface';
+import { UserService } from './users/users.service';
+import { ConfigServiceType } from './config/config.service.interface';
+import { ConfigService } from './config/config.service';
 
 export interface BootstrapReturn {
 	app: App;
@@ -14,9 +18,12 @@ export interface BootstrapReturn {
 }
 
 export const appBindings = new ContainerModule((bind) => {
-	bind.bind<LoggerType>(TYPES.LoggerType).to(LoggerService);
+	bind.bind<LoggerType>(TYPES.LoggerType).to(LoggerService).inSingletonScope();
 	bind.bind<ExeptionFilter>(TYPES.ExeptionFilter).to(ExeptionFilters);
 	bind.bind<UserControllerType>(TYPES.UserController).to(UserController);
+	bind.bind<UserServiceType>(TYPES.UserService).to(UserService);
+	// Создается один раз и передается этот инстенс в другие места
+	bind.bind<ConfigServiceType>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
 	bind.bind<App>(TYPES.Application).to(App);
 });
 

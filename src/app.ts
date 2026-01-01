@@ -7,6 +7,7 @@ import { LoggerType } from './logger/logger.interface';
 import { inject, injectable } from 'inversify';
 import { TYPES } from './types';
 import 'reflect-metadata';
+import { ConfigServiceType } from './config/config.service.interface';
 
 @injectable()
 export class App {
@@ -18,9 +19,14 @@ export class App {
 		@inject(TYPES.LoggerType) private logger: LoggerType,
 		@inject(TYPES.UserController) private userController: UserController,
 		@inject(TYPES.ExeptionFilter) private exeptionFilters: ExeptionFilters,
+		@inject(TYPES.ConfigService) private configService: ConfigServiceType,
 	) {
 		this.app = express();
 		this.port = 8000;
+	}
+
+	useMiddleware(): void {
+		this.app.use(express.json());
 	}
 
 	useRoutes(): void {
@@ -33,6 +39,7 @@ export class App {
 	}
 
 	public async init(): Promise<void> {
+		this.useMiddleware();
 		this.useRoutes();
 		this.useExeptionFilters();
 		this.server = this.app.listen(this.port);
