@@ -12,5 +12,7 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "strictPropertyInitialization": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }
