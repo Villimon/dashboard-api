@@ -22,7 +22,12 @@ export class UserController extends BaseController implements UserControllerType
 	) {
 		super(loggerService);
 		this.bindRouter([
-			{ path: '/login', method: 'post', func: this.login },
+			{
+				path: '/login',
+				method: 'post',
+				func: this.login,
+				middlewares: [new ValidateMiddleware(UserLoginDto)],
+			},
 			{
 				path: '/register',
 				method: 'post',
@@ -32,9 +37,16 @@ export class UserController extends BaseController implements UserControllerType
 		]);
 	}
 
-	login(req: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): void {
-		// next(new HTTPError(401, 'Ошибка авторизации', 'login'));
-		this.ok(res, 'login');
+	async login(
+		{ body }: Request<{}, {}, UserLoginDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const result = await this.userServive.validateUser(body);
+		if (!result) {
+			return next(new HTTPError(401, 'Ошибка авторизации', 'login'));
+		}
+		this.ok(res, 'Успешная авторизация');
 	}
 
 	async register(
@@ -46,6 +58,6 @@ export class UserController extends BaseController implements UserControllerType
 		if (!result) {
 			return next(new HTTPError(422, 'Такой пользователь уже существует', 'register'));
 		}
-		this.ok(res, { email: result.email });
+		this.ok(res, { email: result.email, id: result.id });
 	}
 }

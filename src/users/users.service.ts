@@ -6,24 +6,34 @@ import { UserServiceType } from './users.service.interface';
 import 'reflect-metadata';
 import { ConfigServiceType } from '../config/config.service.interface';
 import { TYPES } from '../types';
+import { UsersRepositoryType } from './users.repository.interface';
+import { UserModel } from '@prisma/client';
 
 // Тут прописывается бизнес логика с бизнес правилами
 @injectable()
 export class UserService implements UserServiceType {
-	constructor(@inject(TYPES.ConfigService) private configService: ConfigServiceType) {}
-	async createUser({ email, name, password }: UserRegisterDto): Promise<User | null> {
+	constructor(
+		@inject(TYPES.ConfigService) private configService: ConfigServiceType,
+		@inject(TYPES.UsersRepository) private usersRepository: UsersRepositoryType,
+	) {}
+	async createUser({ email, name, password }: UserRegisterDto): Promise<UserModel | null> {
 		const newUser = new User(email, name);
 		const salt = this.configService.get('SALT');
-		console.log(salt);
-
 		await newUser.setPassword(password, Number(salt));
-		// Проверка что есть
-		// Если существует то вернем null
-		// Если нет, то создаем
-		return null;
+		const existedUser = await this.usersRepository.find(email);
+		if (existedUser) {
+			return null;
+		}
+
+		return this.usersRepository.create(newUser);
 	}
 
-	async validateUser(dto: UserLoginDto): Promise<boolean> {
-		return true;
+	async validateUser({ email, password }: UserLoginDto): Promise<boolean> {
+		const existedUser = await this.usersRepository.find(email);
+		if (!existedUser) {
+			return false;
+		}
+		const newUser = new User(existedUser.email, existedUser.name, existedUser.password);
+		return newUser.comparePassword(password);
 	}
 }

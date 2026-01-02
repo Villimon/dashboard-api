@@ -14,6 +14,12 @@
     "strictPropertyInitialization": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "sourceMap": true
-  }
+    "sourceMap": true,
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "prisma.config.ts",  // ← исключаем конфиг Prisma
+    "prisma/**/*"        // ← исключаем папку prisma
+  ]
 }

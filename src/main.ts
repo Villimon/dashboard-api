@@ -11,6 +11,9 @@ import { UserServiceType } from './users/users.service.interface';
 import { UserService } from './users/users.service';
 import { ConfigServiceType } from './config/config.service.interface';
 import { ConfigService } from './config/config.service';
+import { PrismaService } from './database/prisma.service';
+import { UsersRepository } from './users/users.repository';
+import { UsersRepositoryType } from './users/users.repository.interface';
 
 export interface BootstrapReturn {
 	app: App;
@@ -24,6 +27,8 @@ export const appBindings = new ContainerModule((bind) => {
 	bind.bind<UserServiceType>(TYPES.UserService).to(UserService);
 	// Создается один раз и передается этот инстенс в другие места
 	bind.bind<ConfigServiceType>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
+	bind.bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope();
+	bind.bind<UsersRepositoryType>(TYPES.UsersRepository).to(UsersRepository).inSingletonScope();
 	bind.bind<App>(TYPES.Application).to(App);
 });
 
