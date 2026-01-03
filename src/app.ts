@@ -9,6 +9,7 @@ import { TYPES } from './types';
 import 'reflect-metadata';
 import { ConfigServiceType } from './config/config.service.interface';
 import { PrismaService } from './database/prisma.service';
+import { AuthMiddleware } from './common/auth.middleware';
 
 @injectable()
 export class App {
@@ -29,6 +30,8 @@ export class App {
 
 	useMiddleware(): void {
 		this.app.use(express.json());
+		const authMiddleware = new AuthMiddleware(this.configService.get('SECRET'));
+		this.app.use(authMiddleware.execute.bind(authMiddleware));
 	}
 
 	useRoutes(): void {
