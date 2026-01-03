@@ -57,7 +57,7 @@ export class UserController extends BaseController implements UserControllerType
 			return next(new HTTPError(401, 'Ошибка авторизации', 'login'));
 		}
 		const jwt = await this.signJWT(body.email, this.configService.get('SECRET'));
-		this.ok(res, `Успешная авторизация: token:${jwt}`);
+		this.ok(res, { jwt });
 	}
 
 	async register(
